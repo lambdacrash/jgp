@@ -12,7 +12,7 @@ This number is mainly impacted by the stack size of each thread. This size can b
 ## Consuming queues in a perfect and ideal world
 Lets consider an application offering a simple `ping` service. Anybody is allowed to post a hostname in a queue and the application retreives a hostname from this queue and ping it one time. Assuming the mean ping time equals to 100ms and the application consumes the queue using 10 threads - each thread is in charge to ping only one host - what the theoretical optimal input rate of the queue ? In other terms, how many hostnames can be consumed per second. 
 
-In this case, the answer is quite trivial - 10/0.1. The optimal input rate is 100 hostnames per second. Each thread will handle at most 10 hostnames per second.  
+In this case, the answer is quite trivial - 10/0.1. The optimal input rate is 100 hostnames per second. Each thread will handle at most 10 hostname per second.  
 
 In order to guarantee a constant memory usage - a bounded queue length, the mean input rate must be smaller or equal to the mean output rate. 
 
@@ -268,8 +268,9 @@ There are several variations for using the `finally` block, according to how exc
 If you're using JDK 7+, then most uses of the finally block can be eliminated, simply by using a try-with-resources statement. If a resource doesn't implement AutoCloseable, then a finally block will still be needed, even in JDK 7+. Two examples would be:
 * resources related to threads
 * resources related to a Graphics object
+
 JDK < 7, and resources that aren't `AutoCloseable`
-The following examples are appropriate for older versions of the JDK. They are also appropriate in JDK 7+, but only for resources that don't implement `AutoCloseable`.
+
 
 [More details](http://www.javapractices.com/topic/TopicAction.do?Id=25)
 
