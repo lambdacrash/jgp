@@ -1,40 +1,62 @@
 <!DOCTYPE html>
 <html>
+
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <title>Java Good Practices by lambdacrash</title>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Java Good Practices : " />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Java Good Practices</title>
   </head>
 
   <body>
-    <div id="container">
-      <div class="inner">
 
-        <header>
-          <h1>Java Good Practices</h1>
-          <h2>Java Good Practices</h2>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/lambdacrash/jgp">View on GitHub</a>
+
+          <h1 id="project_title">Java Good Practices</h1>
+          <h2 id="project_tagline"></h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/lambdacrash/jgp/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/lambdacrash/jgp/tarball/master">Download this project as a tar.gz file</a>
+            </section>
         </header>
+    </div>
 
-        <section id="downloads" class="clearfix">
-          <a href="https://github.com/lambdacrash/jgp/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
-          <a href="https://github.com/lambdacrash/jgp/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
-          <a href="https://github.com/lambdacrash/jgp" id="view-on-github" class="button"><span>View on GitHub</span></a>
-        </section>
-
-        <hr>
-
-        <section id="main_content">
-          <h1>
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
 <a name="java-good-practices" class="anchor" href="#java-good-practices"><span class="octicon octicon-link"></span></a>Java Good Practices</h1>
 
 <p>This GitHub repo is meant to gather a maximum of Java good practices. So, feel free to add/correct practices. </p>
+
+<h1>
+<a name="general-good-practices" class="anchor" href="#general-good-practices"><span class="octicon octicon-link"></span></a>General good practices</h1>
+
+<h2>
+<a name="maximum-number-of-threads" class="anchor" href="#maximum-number-of-threads"><span class="octicon octicon-link"></span></a>Maximum number of threads</h2>
+
+<p>How many threads can I create and start? ... it is very hard to answer this question ... 
+But, there might be some limits imposed by your operating system and hardware configuration.</p>
+
+<p>This number is mainly impacted by the stack size of each thread. This size can be changed with the <code>-Xss</code> JVM parameter. If threads do not use a large amount of data, and if you have 2GB of addressable memory, simply divide these 2GB by the <code>-Xss</code> value. For Linux, the <code>ulimit -a</code> will give some informations.</p>
+
+<h2>
+<a name="consuming-queues-in-a-perfect-and-ideal-world" class="anchor" href="#consuming-queues-in-a-perfect-and-ideal-world"><span class="octicon octicon-link"></span></a>Consuming queues in a perfect and ideal world</h2>
+
+<p>Lets consider an application offering a simple <code>ping</code> service. Anybody is allowed to post a hostname in a queue and the application retreives a hostname from this queue and ping it one time. Assuming the mean ping time equals to 100ms and the application consumes the queue using 10 threads - each thread is in charge to ping only one host - what the theoretical optimal input rate of the queue ? In other terms, how many hostnames can be consumed per second. </p>
+
+<p>In this case, the answer is quite trivial - 10/0.1. The optimal input rate is 100 hostnames per second. Each thread will handle at most 10 hostname per second.  </p>
+
+<p>In order to guarantee a constant memory usage - a bounded queue length, the mean input rate must be smaller or equal to the mean output rate. </p>
+
+<p><a href="http://en.wikipedia.org/wiki/Queueing_theory">More details</a></p>
 
 <h1>
 <a name="constructors" class="anchor" href="#constructors"><span class="octicon octicon-link"></span></a>Constructors</h1>
@@ -352,10 +374,10 @@ There are several variations for using the <code>finally</code> block, according
 
 <ul>
 <li>resources related to threads</li>
-<li>resources related to a Graphics object
-JDK &lt; 7, and resources that aren't <code>AutoCloseable</code>
-The following examples are appropriate for older versions of the JDK. They are also appropriate in JDK 7+, but only for resources that don't implement <code>AutoCloseable</code>.</li>
-</ul><p><a href="http://www.javapractices.com/topic/TopicAction.do?Id=25">More details</a></p>
+<li>resources related to a Graphics object</li>
+</ul><p>JDK &lt; 7, and resources that aren't <code>AutoCloseable</code></p>
+
+<p><a href="http://www.javapractices.com/topic/TopicAction.do?Id=25">More details</a></p>
 
 <h1>
 <a name="good-practices-sources" class="anchor" href="#good-practices-sources"><span class="octicon octicon-link"></span></a>Good practices sources</h1>
@@ -366,14 +388,18 @@ The following examples are appropriate for older versions of the JDK. They are a
 <li><a href="http://stackoverflow.com/">http://stackoverflow.com/</a></li>
 <li>My own experience</li>
 </ul>
-        </section>
+      </section>
+    </div>
 
-        <footer>
-          Java Good Practices is maintained by <a href="https://github.com/lambdacrash">lambdacrash</a><br>
-          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
-        </footer>
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Java Good Practices maintained by <a href="https://github.com/lambdacrash">lambdacrash</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
 
-                  <script type="text/javascript">
+              <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
@@ -384,7 +410,6 @@ The following examples are appropriate for older versions of the JDK. They are a
             } catch(err) {}
           </script>
 
-      </div>
-    </div>
+
   </body>
 </html>
