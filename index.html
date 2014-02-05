@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Java Good Practices by lambdacrash</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Java Good Practices</h1>
+          <h2>Java Good Practices</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/lambdacrash/jgp/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/lambdacrash/jgp/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/lambdacrash/jgp" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>
+<a name="java-good-practices" class="anchor" href="#java-good-practices"><span class="octicon octicon-link"></span></a>Java Good Practices</h1>
+
+<p>This GitHub repo is meant to gather a maximum of Java good practices. So, feel free to add/correct practices. </p>
+
+<h1>
+<a name="constructors" class="anchor" href="#constructors"><span class="octicon octicon-link"></span></a>Constructors</h1>
+
+<h2>
+<a name="dont-pass-this-out-of-a-constructor" class="anchor" href="#dont-pass-this-out-of-a-constructor"><span class="octicon octicon-link"></span></a>Don't pass 'this' out of a constructor</h2>
+
+<p>Within a class, the 'this' Java keyword refers to the native object, the current instance of the class. Within a constructor, you can use the this keyword in 3 different ways:</p>
+
+<ul>
+<li>on the first line, you can call another constructor, using <code>this(...)</code>;</li>
+<li>as a qualifier when referencing fields, as in <code>this.fName</code>
+</li>
+<li>as a reference passed to a method of some other object, as in <code>blah.operation(this);</code>
+You can get into trouble with the last form. The problem is that, inside a constructor, the object is not yet fully constructed. An object is only fully constructed after its constructor completely returns, and not before. But when passed as a parameter to a method of some other object, the <code>this</code> reference should always refer to a fully-formed object.</li>
+</ul><p><a href="http://www.javapractices.com/topic/TopicAction.do?Id=252">More details</a></p>
+
+<h2>
+<a name="constructors-shouldnt-start-threads" class="anchor" href="#constructors-shouldnt-start-threads"><span class="octicon octicon-link"></span></a>Constructors shouldn't start threads</h2>
+
+<p>Constructors shouldn't start threads. According to Java Concurrency in Practice, by Brian Goetz and others (an excellent book), there are two problems with starting a thread in a constructor (or static initializer):</p>
+
+<ul>
+<li>in a non-final class, it increases the danger of problems with subclasses</li>
+<li>it opens the door for allowing the this reference to be passed to another object before the object is fully constructed
+There's nothing wrong with creating a thread object in a constructor or static initializer - just don't start it there.</li>
+</ul><p>The alternative to starting a thread in the constructor is to simply start the thread in an ordinary method instead.</p>
+
+<p><a href="http://www.javapractices.com/topic/TopicAction.do?Id=254">More details</a></p>
+
+<h2>
+<a name="lazy-initialization" class="anchor" href="#lazy-initialization"><span class="octicon octicon-link"></span></a>Lazy initialization</h2>
+
+<p>Lazy initialization is a performance optimization. It's used when data is deemed to be 'expensive' for some reason. For example:</p>
+
+<ul>
+<li>if the hashCode value for an object might not actually be needed by its caller, always calculating the hashCode for all instances of the object may be felt to be unnecessary.</li>
+<li>since accessing a file system or network is relatively slow, such operations should be put off until they are absolutely required.
+Lazy initialization has two objectives:</li>
+<li>delay an expensive operation until it's absolutely necessary</li>
+<li>store the result of that expensive operation, such that you won't need to repeat it again
+As usual, the size of any performance gain, if any, is highly dependent on the problem, and in many cases may not be significant. As with any optimization, this technique should be used only if there is a clear and significant benefit.</li>
+</ul><p>To avoid a <code>NullPointerException</code>, a class must self-encapsulate fields that have lazy initialization. That is, a class cannot refer directly to such fields, but must access them through a method.</p>
+
+<p>The <code>hashCode</code> method of an immutable Model Object is a common candidate for lazy initialization.</p>
+
+<p><a href="http://www.javapractices.com/topic/TopicAction.do?Id=34">More details</a></p>
+
+<h1>
+<a name="threads" class="anchor" href="#threads"><span class="octicon octicon-link"></span></a>Threads</h1>
+
+<h2>
+<a name="use-finally-to-unlock" class="anchor" href="#use-finally-to-unlock"><span class="octicon octicon-link"></span></a>Use finally to unlock</h2>
+
+<p>Sometimes <code>Lock</code> objects are used to control access to mutable data in a multithreaded environment. When a thread is finished with the data, you must ensure the lock is released.
+Brian Goetz in <a href="http://www.amazon.com/exec/obidos/ASIN/0321349601/ref=nosim/javapractices-20">Java Concurrency in Practice</a> strongly recommends the following technique for ensuring that a lock is released. It uses a <code>try..finally</code> style; this ensures that no matter what happens during the time the lock is held, it will eventually be unlocked. Even if an unexpected RuntimeException is thrown, the lock will still be released.</p>
+
+<div class="highlight highlight-java"><pre><span class="n">Lock</span> <span class="n">myLock</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">myLock</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+<span class="k">try</span> <span class="o">{</span>
+  <span class="c1">//interact with mutable data</span>
+<span class="o">}</span>
+<span class="k">finally</span><span class="o">{</span>
+  <span class="n">myLock</span><span class="o">.</span><span class="na">unlock</span><span class="o">();</span>
+<span class="o">}</span>
+</pre></div>
+
+<p><a href="http://www.javapractices.com/topic/TopicAction.do?Id=253">More details</a></p>
+
+<h2>
+<a name="read-write-locks" class="anchor" href="#read-write-locks"><span class="octicon octicon-link"></span></a>Read-write locks</h2>
+
+<p>In the great majority of database applications, the frequency of read operations greatly exceeds the frequency of write operations. This is why databases implement read-write locks for their records, which allow for concurrent reading, but still demand exclusive writing. This can markedly increase performance.
+Occasionally, a class may benefit as well from a read-write lock, for exactly the same reasons - reads are much more frequent than writes. As usual, you should measure performance to determine if a read-write lock is really improving performance.</p>
+
+<p><a href="http://www.javapractices.com/topic/TopicAction.do?Id=118">More details</a></p>
+
+<h2>
+<a name="handle-interruptedexception" class="anchor" href="#handle-interruptedexception"><span class="octicon octicon-link"></span></a>Handle InterruptedException</h2>
+
+<p>In thread-related code, you will often need to handle an InterruptedException. There are two common ways of handling it:</p>
+
+<ul>
+<li>just throw the exception up to the caller (perhaps after doing some clean up)</li>
+<li>call the interrupt method on the current thread
+In the second case, the standard style is:</li>
+</ul><pre><code>try {
+  ...thread-related code...
+}
+catch(InterruptedException ex){
+  ...perhaps some error handling here...
+  //re-interrupt the current thread
+  Thread.currentThread().interrupt();
+}
+</code></pre>
+
+<h3>
+<a name="background" class="anchor" href="#background"><span class="octicon octicon-link"></span></a>Background</h3>
+
+<p>In multi-threaded code, threads can often block; the thread pauses execution until some external condition is met, such as:</p>
+
+<ul>
+<li>a lock is released</li>
+<li>another thread completes an operation</li>
+<li>some I/O operation completes</li>
+<li>and so on...
+Threads can be interrupted. An interrupt asks a thread to stop what it's doing in an orderly fashion. However, the exact response to the interrupt depends on the thread's state, and how the thread is implemented:</li>
+</ul><pre><code>if the thread is currently blocking 
+  stop blocking early
+  throw InterruptedException
+else thread is doing real work
+  thread's interrupted status is set to true
+  if thread polls isInterrupted() periodically
+    (which is preferred)
+    orderly cleanup and stop execution
+    throw InterruptedException
+  else 
+    regular execution continues
+</code></pre>
+
+<p>The main idea here is that an interrupt should not shutdown a thread immediately, in the middle of a computation. Rather, a thread and it's caller communicate with each other to allow for an orderly shutdown.</p>
+
+<p><a href="http://www.javapractices.com/topic/TopicAction.do?Id=251">More details</a></p>
+
+<h2>
+<a name="prefer-modern-libraries-for-concurrency" class="anchor" href="#prefer-modern-libraries-for-concurrency"><span class="octicon octicon-link"></span></a>Prefer modern libraries for concurrency</h2>
+
+<p>Version 1.5 of the JDK included a new package called <code>java.util.concurrent</code>. It contains modern tools for operations involving threads. You should usually prefer using this package instead of older, more low-level techniques.
+The java.util.concurrent package is fairly large. The best guide to its contents is likely the excellent book <a href="http://www.amazon.com/exec/obidos/ASIN/0321349601/ref=nosim/javapractices-20">Java Concurrency in Practice</a>, written by Brian Goetz and other experts. The following is a very brief sketch of the most important elements in <code>java.util.concurrent</code>.</p>
+
+<p>The most important idea is the separation of tasks and the policy for their execution. A task (an informal term) comes in two flavours:</p>
+
+<ul>
+<li>java.lang.Runnable - a task which doesn't return a value (like a void method).</li>
+<li>Callable - a task which can return a value (this is the more flexible form)
+For executing tasks, there are 3 important interfaces, which are linked in an inheritance chain. Starting at the top level, they are:</li>
+<li>Executor - a single execute method</li>
+<li>ExecutorService - common workhorse; submit and invoke methods; includes lifecycle methods</li>
+<li>ScheduledExecutorService - executes tasks after a specific time interval, or periodically
+The Executors factory class returns implementations of ExecutorService and ScheduledExecutorService.
+When you need to be informed of the result of a task after it completes, you will likely use these items:</li>
+<li>Future - see the result of a task, or cancel it</li>
+<li>CompletionService - accepts tasks, and returns their Futures</li>
+<li>ExecutorCompletionService - an implementation of CompletionService
+Finally, the following are used to synchronize between threads:</li>
+<li>CountDownLatch</li>
+<li>CyclicBarrier</li>
+<li>FutureTask</li>
+</ul><p>Concurrency uses many specialized terms. Some definitions:</p>
+
+<ul>
+<li>user thread, daemon thread - in Java, the JRE terminates when all user threads terminate; a single user thread will prevent the JRE from terminating. A * daemon thread, on the other hand, will not prevent the JRE from terminating.</li>
+<li>blocking - if a thread pauses execution until a certain condition is met, then it's said to be blocking.</li>
+<li>safety - when nothing unpleasant happens in a multithreaded environment (this is admittedly vague).</li>
+<li>liveness - execution continues, eventually; there may be significant pauses in a thread, but the application never completely hangs.</li>
+<li>deadlock - execution hangs, since a pair of threads each holds (and keeps) a lock that the other thread needs in order to continue.</li>
+<li>race condition - if you are unlucky with the timing of how threads interleave their execution, then bad things will happen.</li>
+<li>re-entrant - if a thread already holds a re-entrant lock, and if it needs to re-acquire the lock, then the re-acquisition always succeeds without blocking. Most locks are re-entrant, including Java's intrinsic locks (see below).</li>
+<li>intrinsic lock - the built-in locks of the Java language. These correspond to uses of the synchronized keyword.</li>
+<li>mutex lock - mutually exclusive locks are held by at most one thread at a time. For example, intrinsic locks are mutexes. Read-write locks are not mutexes, since they allow N readers to access the same data at once.</li>
+<li>thread confinement - data that is only accessed by a single thread is always safe, since it's confined to a single thread.</li>
+<li>semaphore - object pools containing a limited number of resources use a semaphore to keep track of how many of the resources are currently in use.</li>
+</ul><p>Here's the lifecycle of a task submitted to an Executor:</p>
+
+<ul>
+<li>created - the task object has been created, but not yet submitted to an Executor.</li>
+<li>submitted - the task has been submitted to an Executor, but hasn't been started yet. In this state, the task can always be cancelled.</li>
+<li>started - the task has begun. The task may be cancelled, if the task is responsive to interruption.</li>
+<li>completed - the task has finished. Cancelling a completed task has no effect.</li>
+</ul><p><a href="http://www.javapractices.com/topic/TopicAction.do?Id=248">More details</a></p>
+
+<h1>
+<a name="collections" class="anchor" href="#collections"><span class="octicon octicon-link"></span></a>Collections</h1>
+
+<h2>
+<a name="concurrenthashmap" class="anchor" href="#concurrenthashmap"><span class="octicon octicon-link"></span></a><code>ConcurrentHashMap</code>
+</h2>
+
+<p>Always use <code>ConcurrentHashMap</code> instead of <code>HashMap</code> because:</p>
+
+<ul>
+<li>the <code>ConcurrentHashMap</code> is natively thread-safe</li>
+<li>the <code>ConcurrentHashMap</code> is faster than the <code>HashMap</code> even in mono-threaded environment</li>
+</ul><p><a href="http://www.codercorp.com/blog/java/why-concurrenthashmap-is-better-than-hashtable-and-just-as-good-hashmap.html">More details</a></p>
+
+<h2>
+<a name="string-keys-in-hashmap" class="anchor" href="#string-keys-in-hashmap"><span class="octicon octicon-link"></span></a><code>String</code> keys in <code>HashMap</code>
+</h2>
+
+<p>Avoid <code>String</code> keys in <code>HashMap</code>because:</p>
+
+<ul>
+<li>using a <code>String</code> as key does not avoid collision</li>
+<li>the <code>hashCode()</code> of a <code>String</code> is not final (recomputed each time)</li>
+</ul><p><a href="http://stackoverflow.com/questions/1516549/bad-idea-to-use-string-key-in-hashmap">More details</a></p>
+
+<h1>
+<a name="logging" class="anchor" href="#logging"><span class="octicon octicon-link"></span></a>Logging</h1>
+
+<p><em>NB: Keep in mind that all the logs are stored in files and these files size could rapidly grow!</em></p>
+
+<h2>
+<a name="use-guarded-logging" class="anchor" href="#use-guarded-logging"><span class="octicon octicon-link"></span></a>Use Guarded Logging</h2>
+
+<p>"Guarded logging" is a pattern that checks to see if a log statement will result in output before it is executed. Since the logger itself makes this check, it may seem redundant to do this for every call. However, as almost every logging call creates String objects, it is critical. The accumulation of these Strings causes memory fragmentation and unnecessary garbage collection. Garbage collection, while beneficial, also produces significant performance loss. To reduce this as much as possible, always guard logging statements with a severity less than SEVERE. Since SEVERE is always expressed by the logger, these do not need a guard. Here is an example:</p>
+
+<div class="highlight highlight-java"><pre><span class="k">if</span><span class="o">(</span><span class="n">LOG</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">()){</span>
+     <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"This is "</span> <span class="o">+</span> <span class="s">"a best practice "</span> <span class="o">+</span> <span class="s">"example"</span><span class="o">);</span>
+<span class="o">}</span>
+</pre></div>
+
+<h2>
+<a name="use-stringbuilder-and-tostring-or-toprint" class="anchor" href="#use-stringbuilder-and-tostring-or-toprint"><span class="octicon octicon-link"></span></a>Use <code>StringBuilder</code> and <code>toString()</code> or <code>toPrint()</code>
+</h2>
+
+<p>Sometimes, when you want to print all the values of an object, it is helpful to use a <code>StringBuffer</code> or <code>StringBuilder</code>. In this way, you can assemble all of the data into one clean output statement and avoid cluttering up your log file with redundant data (i.e. multiple lines with several time and level stamps for just one object). The snippet below shows an example of how to do this, but it is still not the best approach.</p>
+
+<div class="highlight highlight-java"><pre><span class="k">if</span><span class="o">(</span><span class="n">LOG</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">()){</span>
+    <span class="n">StringBuffer</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuffer</span><span class="o">();</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n           label: "</span> <span class="o">+</span> <span class="n">cat</span><span class="o">.</span><span class="na">getLabel</span><span class="o">());</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n    categoryType: "</span> <span class="o">+</span> <span class="n">cat</span><span class="o">.</span><span class="na">getCategoryType</span><span class="o">());</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n       attribute: "</span> <span class="o">+</span> <span class="n">cat</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">());</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n           value: "</span> <span class="o">+</span> <span class="n">cat</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n      Child Cats: "</span> <span class="o">+</span> <span class="n">cat</span><span class="o">.</span><span class="na">getCategories</span><span class="o">().</span><span class="na">toString</span><span class="o">());</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n           links: "</span> <span class="o">+</span> <span class="n">cat</span><span class="o">.</span><span class="na">getLinks</span><span class="o">().</span><span class="na">toString</span><span class="o">());</span>
+    <span class="n">LOG</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"&gt;&gt; saveCategory(...)-&gt; passing this cat: "</span> <span class="o">+</span> <span class="n">sb</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+<span class="o">}</span>
+</pre></div>
+
+<p>While the code above creates a clean logging statement without multiple lines containing redundant data, there is still a problem. Notice that we are printing the values of the object "cat" (of the class Category). What would be better is to move most of this code into a <code>toString()</code> method on the Category class itself. In this way, all developers can simply call the <code>toString()</code> method to get a print of all the object's current data. Sometimes, however, you might find that you'd rather use a <code>toString()</code> method for application functionality instead of for logging or because the <code>toString()</code> method is already being used in another way. In this case, you could create a method called <code>toPrint</code> instead. Following is an example:</p>
+
+<div class="highlight highlight-java"><pre><span class="cm">/**</span>
+<span class="cm">* @return a String representation of this object on multiple lines</span>
+<span class="cm">*         (primarily to be used for debugging and logging)</span>
+<span class="cm">*/</span>
+<span class="kd">public</span> <span class="n">String</span> <span class="nf">toPrint</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">StringBuilder</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">categories</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n categories.size: "</span> <span class="o">+</span> <span class="n">categories</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n      categories: null"</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">links</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n      links.size: "</span> <span class="o">+</span> <span class="n">links</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n           links: null"</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n         ownerID: "</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">ownerID</span><span class="o">);</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n          userID: "</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">userID</span><span class="o">);</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n       attribute: "</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">attribute</span><span class="o">);</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n           value: "</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">value</span><span class="o">);</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n          locale: "</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">locale</span><span class="o">);</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n    categoryType: "</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">categoryType</span><span class="o">);</span>
+
+    <span class="k">return</span> <span class="n">sb</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+<span class="o">}</span>
+</pre></div>
+
+<p>Notice also in the code snippet above that we have taken care to align all of the colons separating the key from value. This makes the <code>toPrint()</code> method's output much easier to read. Also notice that we've added a newline character to the beginning of each property statement that appends to the <code>StringBuffer</code>.</p>
+
+<h1>
+<a name="overriding-object-methods" class="anchor" href="#overriding-object-methods"><span class="octicon octicon-link"></span></a>Overriding Object Methods</h1>
+
+<h2>
+<a name="never-rely-on-finalize" class="anchor" href="#never-rely-on-finalize"><span class="octicon octicon-link"></span></a>Never rely on <code>finalize</code>
+</h2>
+
+<p>You cannot rely on finalize to always reclaim resources. Instead, if an object has resources which need to be recovered, it must define a method for that very purpose - for example a close method, or a dispose method. The caller is then required to explicitly call that method when finished with the object, to ensure any related resources are recovered.
+With JDK 7+, the try-with-resources feature can be used to reclaim resources for any object that implements AutoCloseable.</p>
+
+<p>The <code>System.runFinalizersOnExit(boolean)</code> method is deprecated. </p>
+
+<p><a href="http://www.javapractices.com/topic/TopicAction.do?Id=24">More details</a></p>
+
+<h1>
+<a name="exceptions" class="anchor" href="#exceptions"><span class="octicon octicon-link"></span></a>Exceptions</h1>
+
+<h2>
+<a name="be-specific-in-throws-clause" class="anchor" href="#be-specific-in-throws-clause"><span class="octicon octicon-link"></span></a>Be specific in throws clause</h2>
+
+<p>In the throws clause of a method header, be as specific as possible. Do not group together related exceptions in a generic exception class - that would represent a loss of possibly important information.
+An alternative is the exception translation practice, in which a low level exception is first translated into a higher level exception before being thrown out of the method.</p>
+
+<p><a href="http://www.javapractices.com/topic/TopicAction.do?Id=27">More details</a></p>
+
+<h2>
+<a name="checked-versus-unchecked-exceptions" class="anchor" href="#checked-versus-unchecked-exceptions"><span class="octicon octicon-link"></span></a>Checked versus unchecked exceptions</h2>
+
+<h3>
+<a name="unchecked-exceptions" class="anchor" href="#unchecked-exceptions"><span class="octicon octicon-link"></span></a>Unchecked exceptions:</h3>
+
+<ul>
+<li>represent defects in the program (bugs) - often invalid arguments passed to a non-private method. To quote from The Java Programming Language, by Gosling, Arnold, and Holmes: "Unchecked runtime exceptions represent conditions that, generally speaking, reflect errors in your program's logic and cannot be reasonably recovered from at run time."</li>
+<li>are subclasses of RuntimeException, and are usually implemented using IllegalArgumentException, NullPointerException, or IllegalStateException</li>
+<li>a method is not obliged to establish a policy for the unchecked exceptions thrown by its implementation (and they almost always do not do so)</li>
+</ul><h3>
+<a name="checked-exceptions" class="anchor" href="#checked-exceptions"><span class="octicon octicon-link"></span></a>Checked exceptions:</h3>
+
+<ul>
+<li>represent invalid conditions in areas outside the immediate control of the program (invalid user input, database problems, network outages, absent files)</li>
+<li>are subclasses of Exception</li>
+<li>a method is obliged to establish a policy for all checked exceptions thrown by its implementation (either pass the checked exception further up the stack, or handle it somehow)
+It's somewhat confusing, but note as well that RuntimeException (unchecked) is itself a subclass of <code>Exception</code> (checked).</li>
+</ul><p><a href="http://www.javapractices.com/topic/TopicAction.do?Id=129">More details</a></p>
+
+<h2>
+<a name="finally-and-catch" class="anchor" href="#finally-and-catch"><span class="octicon octicon-link"></span></a><code>Finally</code> and <code>catch</code>
+</h2>
+
+<p>The <code>finally</code> block is used to ensure resources are recovered regardless of any problems that may occur.
+There are several variations for using the <code>finally</code> block, according to how exceptions are handled.</p>
+
+<p>If you're using JDK 7+, then most uses of the finally block can be eliminated, simply by using a try-with-resources statement. If a resource doesn't implement AutoCloseable, then a finally block will still be needed, even in JDK 7+. Two examples would be:</p>
+
+<ul>
+<li>resources related to threads</li>
+<li>resources related to a Graphics object
+JDK &lt; 7, and resources that aren't <code>AutoCloseable</code>
+The following examples are appropriate for older versions of the JDK. They are also appropriate in JDK 7+, but only for resources that don't implement <code>AutoCloseable</code>.</li>
+</ul><p><a href="http://www.javapractices.com/topic/TopicAction.do?Id=25">More details</a></p>
+
+<h1>
+<a name="good-practices-sources" class="anchor" href="#good-practices-sources"><span class="octicon octicon-link"></span></a>Good practices sources</h1>
+
+<ul>
+<li><a href="http://www.javapractices.com/">http://www.javapractices.com/</a></li>
+<li><a href="http://docs.oracle.com/">http://docs.oracle.com/</a></li>
+<li><a href="http://stackoverflow.com/">http://stackoverflow.com/</a></li>
+<li>My own experience</li>
+</ul>
+        </section>
+
+        <footer>
+          Java Good Practices is maintained by <a href="https://github.com/lambdacrash">lambdacrash</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+                  <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-39557802-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+      </div>
+    </div>
+  </body>
+</html>
