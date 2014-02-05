@@ -14,7 +14,7 @@ Lets consider an application offering a simple `ping` service. Anybody is allowe
 
 In this case, the answer is quite trivial - 10/0.1. The optimal input rate is 100 hostnames per second. Each thread will handle at most 10 hostname per second.  
 
-In order to guarantee a constant memory usage - a bounded queue length, the mean input rate must be smaller or equal to the mean output rate. 
+In order to guarantee a constant memory usage - a bounded queue length, the mean input rate must be smaller or equal than the mean output rate. 
 
 [More details](http://en.wikipedia.org/wiki/Queueing_theory)
 
