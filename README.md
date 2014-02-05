@@ -10,7 +10,7 @@ But, there might be some limits imposed by your operating system and hardware co
 This number is mainly impacted by the stack size of each thread. This size can be changed with the `-Xss` JVM parameter. If threads do not use a large amount of data, and if you have 2GB of addressable memory, simply divide these 2GB by the `-Xss` value. For Linux, the `ulimit -a` will give some informations.
 
 ## Consuming queues in a perfect and ideal world
-Lets consider an application offering a simple `ping` service. Anybody is allowed to post a hostname in a queue and the application retreives a hostname from this queue and ping it one time. Assuming the mean ping time equals to 100ms and the application consumes the queue using 10 threads - each thread is in charge to ping only one host - what the theoretical optimal input rate of the queue ? In other terms, how many hostnames can be consumed per second. 
+Lets consider an application offering a simple `ping` service. Anybody is allowed to post a hostname in a queue and the application retrieves a hostname from this queue and ping it one time. Assuming the mean ping time equals to 100ms and the application consumes the queue using 10 threads - each thread is in charge to ping only one host - what the theoretical optimal input rate of the queue ? In other terms, how many hostnames can be consumed per second. 
 
 In this case, the answer is quite trivial - 10/0.1. The optimal input rate is 100 hostnames per second. Each thread will handle at most 10 hostname per second.  
 
