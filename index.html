@@ -54,7 +54,7 @@ But, there might be some limits imposed by your operating system and hardware co
 
 <p>In this case, the answer is quite trivial - 10/0.1. The optimal input rate is 100 hostnames per second. Each thread will handle at most 10 hostname per second.  </p>
 
-<p>In order to guarantee a constant memory usage - a bounded queue length, the mean input rate must be smaller than the mean output rate. </p>
+<p>In order to guarantee a constant memory usage - a bounded queue length, the mean input rate must be smaller or equal than the mean output rate. </p>
 
 <p><a href="http://en.wikipedia.org/wiki/Queueing_theory">More details</a></p>
 
@@ -380,6 +380,15 @@ There are several variations for using the <code>finally</code> block, according
 <p><a href="http://www.javapractices.com/topic/TopicAction.do?Id=25">More details</a></p>
 
 <h1>
+<a name="message-driven-beans--ejb" class="anchor" href="#message-driven-beans--ejb"><span class="octicon octicon-link"></span></a>Message Driven Beans &amp; EJB</h1>
+
+<p>Please have a look to:</p>
+
+<ul>
+<li><a href="http://www.precisejava.com/javaperf/j2ee/EJB.htm">http://www.precisejava.com/javaperf/j2ee/EJB.htm</a></li>
+<li><a href="http://www.ibm.com/developerworks/websphere/library/techarticles/0508_parkinson/0508_parkinson.html">http://www.ibm.com/developerworks/websphere/library/techarticles/0508_parkinson/0508_parkinson.html</a></li>
+<li><a href="http://docs.oracle.com/cd/E16764_01/web.1111/e13814/mdbtuning.htm">http://docs.oracle.com/cd/E16764_01/web.1111/e13814/mdbtuning.htm</a></li>
+</ul><h1>
 <a name="good-practices-sources" class="anchor" href="#good-practices-sources"><span class="octicon octicon-link"></span></a>Good practices sources</h1>
 
 <ul>
