@@ -276,6 +276,11 @@ JDK < 7, and resources that aren't `AutoCloseable`
 
 
 
+# Message Driven Beans & EJB
+Please have a look to:
+* http://www.precisejava.com/javaperf/j2ee/EJB.htm
+* http://www.ibm.com/developerworks/websphere/library/techarticles/0508_parkinson/0508_parkinson.html
+* http://docs.oracle.com/cd/E16764_01/web.1111/e13814/mdbtuning.htm
 
 
 
