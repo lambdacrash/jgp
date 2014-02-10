@@ -1,6 +1,43 @@
+<!-- 
+ cat a.mdown | grep "#" | awk '{print tolower($0)}' | sed 's/ /-/g' | sed 's/`//g' | sed 's/://g' | sed 's/(//g' | sed 's/)//g' | sed "s/'//g"
+ cat a.mdown | grep "#" | sed 's/# //g' | sed 's/#//g' | awk '{print ("["$0"]")}'
+-->
+
 Java Good Practices
 ===================
 This GitHub repo is meant to gather a maximum of Java good practices. So, feel free to add/correct practices. 
+
+#Content
+* [General good practices](#general-good-practices)
+  * [Maximum number of threads](#maximum-number-of-threads)
+  * [Consuming queues in a perfect and ideal world](#consuming-queues-in-a-perfect-and-ideal-world)
+  * [Message Driven Beans & EJB](#message-driven-beans--ejb)
+* [Constructors](#constructors)
+  * [Don't pass 'this' out of a constructor](#dont-pass-this-out-of-a-constructor)
+  * [Constructors shouldn't start threads](#constructors-shouldnt-start-threads)
+  * [Lazy initialization](#lazy-initialization)
+* [Threads](#threads)
+  * [Use finally to unlock](#use-finally-to-unlock)
+  * [Read-write locks](#read-write-locks)
+  * [Handle InterruptedException](#handle-interruptedexception)
+  * [Background](#background)
+  * [Prefer modern libraries for concurrency](#prefer-modern-libraries-for-concurrency)
+* [Collections ](#collections)
+  * [`ConcurrentHashMap`](#concurrenthashmap)
+  * [`String` keys in `HashMap`](#string-keys-in-hashmap)
+* [Logging](#logging)
+  * [Use Guarded Logging](#use-guarded-logging)
+  * [Use `StringBuilder` and `toString()` or `toPrint()`](#use-stringbuilder-and-tostring-or-toprint)
+* [Overriding Object Methods](#overriding-object-methods)
+  * [Never rely on `finalize`](#never-rely-on-finalize)
+* [Exceptions](#exceptions)
+  * [Be specific in throws clause](#be-specific-in-throws-clause)
+  * [Checked versus unchecked exceptions](#checked-versus-unchecked-exceptions)
+    * [Unchecked exceptions:](#unchecked-exceptions)
+    * [Checked exceptions:](#checked-exceptions)
+  * [`Finally` and `catch`](#finally-and-catch)
+* [Good practices sources](#good-practices-sources)
+
 
 # General good practices
 ## Maximum number of threads
@@ -17,6 +54,13 @@ In this case, the answer is quite trivial - 10/0.1. The optimal input rate is 10
 In order to guarantee a constant memory usage - a bounded queue length, the mean input rate must be smaller or equal than the mean output rate. 
 
 [More details](http://en.wikipedia.org/wiki/Queueing_theory)
+
+
+##Message Driven Beans & EJB
+Please have a look to:
+* http://www.precisejava.com/javaperf/j2ee/EJB.htm
+* http://www.ibm.com/developerworks/websphere/library/techarticles/0508_parkinson/0508_parkinson.html
+* http://docs.oracle.com/cd/E16764_01/web.1111/e13814/mdbtuning.htm
 
 # Constructors
 ## Don't pass 'this' out of a constructor
@@ -276,11 +320,6 @@ JDK < 7, and resources that aren't `AutoCloseable`
 
 
 
-# Message Driven Beans & EJB
-Please have a look to:
-* http://www.precisejava.com/javaperf/j2ee/EJB.htm
-* http://www.ibm.com/developerworks/websphere/library/techarticles/0508_parkinson/0508_parkinson.html
-* http://docs.oracle.com/cd/E16764_01/web.1111/e13814/mdbtuning.htm
 
 
 
