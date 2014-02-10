@@ -31,12 +31,87 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h1>
+        
+
+<h1>
 <a name="java-good-practices" class="anchor" href="#java-good-practices"><span class="octicon octicon-link"></span></a>Java Good Practices</h1>
 
 <p>This GitHub repo is meant to gather a maximum of Java good practices. So, feel free to add/correct practices. </p>
 
 <h1>
+<a name="content" class="anchor" href="#content"><span class="octicon octicon-link"></span></a>Content</h1>
+
+<ul>
+<li>
+<a href="#general-good-practices">General good practices</a>
+
+<ul>
+<li><a href="#maximum-number-of-threads">Maximum number of threads</a></li>
+<li><a href="#consuming-queues-in-a-perfect-and-ideal-world">Consuming queues in a perfect and ideal world</a></li>
+<li><a href="#message-driven-beans--ejb">Message Driven Beans &amp; EJB</a></li>
+</ul>
+</li>
+<li>
+<a href="#constructors">Constructors</a>
+
+<ul>
+<li><a href="#dont-pass-this-out-of-a-constructor">Don't pass 'this' out of a constructor</a></li>
+<li><a href="#constructors-shouldnt-start-threads">Constructors shouldn't start threads</a></li>
+<li><a href="#lazy-initialization">Lazy initialization</a></li>
+</ul>
+</li>
+<li>
+<a href="#threads">Threads</a>
+
+<ul>
+<li><a href="#use-finally-to-unlock">Use finally to unlock</a></li>
+<li><a href="#read-write-locks">Read-write locks</a></li>
+<li><a href="#handle-interruptedexception">Handle InterruptedException</a></li>
+<li><a href="#background">Background</a></li>
+<li><a href="#prefer-modern-libraries-for-concurrency">Prefer modern libraries for concurrency</a></li>
+</ul>
+</li>
+<li>
+<a href="#collections">Collections </a>
+
+<ul>
+<li><a href="#concurrenthashmap"><code>ConcurrentHashMap</code></a></li>
+<li><a href="#string-keys-in-hashmap"><code>String</code> keys in <code>HashMap</code></a></li>
+</ul>
+</li>
+<li>
+<a href="#logging">Logging</a>
+
+<ul>
+<li><a href="#use-guarded-logging">Use Guarded Logging</a></li>
+<li><a href="#use-stringbuilder-and-tostring-or-toprint">Use <code>StringBuilder</code> and <code>toString()</code> or <code>toPrint()</code></a></li>
+</ul>
+</li>
+<li>
+<a href="#overriding-object-methods">Overriding Object Methods</a>
+
+<ul>
+<li><a href="#never-rely-on-finalize">Never rely on <code>finalize</code></a></li>
+</ul>
+</li>
+<li>
+<a href="#exceptions">Exceptions</a>
+
+<ul>
+<li><a href="#be-specific-in-throws-clause">Be specific in throws clause</a></li>
+<li>
+<a href="#checked-versus-unchecked-exceptions">Checked versus unchecked exceptions</a>
+
+<ul>
+<li><a href="#unchecked-exceptions">Unchecked exceptions:</a></li>
+<li><a href="#checked-exceptions">Checked exceptions:</a></li>
+</ul>
+</li>
+<li><a href="#finally-and-catch"><code>Finally</code> and <code>catch</code></a></li>
+</ul>
+</li>
+<li><a href="#good-practices-sources">Good practices sources</a></li>
+</ul><h1>
 <a name="general-good-practices" class="anchor" href="#general-good-practices"><span class="octicon octicon-link"></span></a>General good practices</h1>
 
 <h2>
@@ -58,7 +133,16 @@ But, there might be some limits imposed by your operating system and hardware co
 
 <p><a href="http://en.wikipedia.org/wiki/Queueing_theory">More details</a></p>
 
-<h1>
+<h2>
+<a name="message-driven-beans--ejb" class="anchor" href="#message-driven-beans--ejb"><span class="octicon octicon-link"></span></a>Message Driven Beans &amp; EJB</h2>
+
+<p>Please have a look to:</p>
+
+<ul>
+<li><a href="http://www.precisejava.com/javaperf/j2ee/EJB.htm">http://www.precisejava.com/javaperf/j2ee/EJB.htm</a></li>
+<li><a href="http://www.ibm.com/developerworks/websphere/library/techarticles/0508_parkinson/0508_parkinson.html">http://www.ibm.com/developerworks/websphere/library/techarticles/0508_parkinson/0508_parkinson.html</a></li>
+<li><a href="http://docs.oracle.com/cd/E16764_01/web.1111/e13814/mdbtuning.htm">http://docs.oracle.com/cd/E16764_01/web.1111/e13814/mdbtuning.htm</a></li>
+</ul><h1>
 <a name="constructors" class="anchor" href="#constructors"><span class="octicon octicon-link"></span></a>Constructors</h1>
 
 <h2>
@@ -380,15 +464,6 @@ There are several variations for using the <code>finally</code> block, according
 <p><a href="http://www.javapractices.com/topic/TopicAction.do?Id=25">More details</a></p>
 
 <h1>
-<a name="message-driven-beans--ejb" class="anchor" href="#message-driven-beans--ejb"><span class="octicon octicon-link"></span></a>Message Driven Beans &amp; EJB</h1>
-
-<p>Please have a look to:</p>
-
-<ul>
-<li><a href="http://www.precisejava.com/javaperf/j2ee/EJB.htm">http://www.precisejava.com/javaperf/j2ee/EJB.htm</a></li>
-<li><a href="http://www.ibm.com/developerworks/websphere/library/techarticles/0508_parkinson/0508_parkinson.html">http://www.ibm.com/developerworks/websphere/library/techarticles/0508_parkinson/0508_parkinson.html</a></li>
-<li><a href="http://docs.oracle.com/cd/E16764_01/web.1111/e13814/mdbtuning.htm">http://docs.oracle.com/cd/E16764_01/web.1111/e13814/mdbtuning.htm</a></li>
-</ul><h1>
 <a name="good-practices-sources" class="anchor" href="#good-practices-sources"><span class="octicon octicon-link"></span></a>Good practices sources</h1>
 
 <ul>
