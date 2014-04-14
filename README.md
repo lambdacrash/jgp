@@ -214,7 +214,6 @@ Always use `ConcurrentHashMap` instead of `HashMap` because:
 ## `String` keys in `HashMap`
 Avoid `String` keys in `HashMap`because:
 * using a `String` as key does not avoid collision
-* the `hashCode()` of a `String` is not final (recomputed each time)
 
 [More details](http://stackoverflow.com/questions/1516549/bad-idea-to-use-string-key-in-hashmap)
 
